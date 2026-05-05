@@ -16,8 +16,6 @@ services:
       # Persist downloaded models so we don't redownload ~1.5 GB on every
       # container restart. First start downloads, subsequent starts are ~30s.
       - whisper-cache:/cache
-    networks:
-      - meizuno
     restart: unless-stopped
     deploy:
       resources:
@@ -28,7 +26,3 @@ services:
 
 volumes:
   whisper-cache:
-
-networks:
-  meizuno:
-    external: true
