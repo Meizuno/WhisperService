@@ -1,0 +1,34 @@
+# Example block to drop into your existing docker-compose.yml.
+# Build from this directory or pull a published image.
+
+services:
+  whisper:
+    build: .
+    # image: ghcr.io/<you>/whisper-service:latest
+    container_name: whisper
+    environment:
+      WHISPER_MODEL: medium           # tiny | base | small | medium | large-v3
+      WHISPER_DEVICE: cpu
+      WHISPER_COMPUTE_TYPE: int8      # int8 halves memory at minor accuracy cost
+      WHISPER_BEAM_SIZE: 5
+      WHISPER_VAD: 1
+    volumes:
+      # Persist downloaded models so we don't redownload ~1.5 GB on every
+      # container restart. First start downloads, subsequent starts are ~30s.
+      - whisper-cache:/cache
+    networks:
+      - meizuno
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          # `medium` model needs ~2 GB peak; bump to 4g for `large-v3`.
+          cpus: "2"
+          memory: 2.5g
+
+volumes:
+  whisper-cache:
+
+networks:
+  meizuno:
+    external: true
